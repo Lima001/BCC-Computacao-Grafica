@@ -2,13 +2,13 @@
 #include <math.h>
 #include <iostream>
 
+#define TITLE "Bresenham"
 #define HEIGHT 600
 #define WIDTH 800
-#define XI 0 
-#define YI 0
-#define XF 100
-#define YF -10
-#define TITLE "Bresenham"
+#define XI 100
+#define YI -100
+#define XF -275
+#define YF 45
 
 /* 
     Implementado considerando os diferentes quadrantes e as
@@ -20,7 +20,7 @@
 */
 void desenharLinha(SDL_Renderer* r, int xi, int yi, int xf, int yf){
     int dx = std::abs(xf-xi), dy = std::abs(yf-yi);
-    int a, b, wa_shift, wb_shift, end, x=xi, y=yi;
+    int a, b, wa_offset, wb_offset, end, x=xi, y=yi;
     int* wa;
     int* wb;
 
@@ -30,18 +30,8 @@ void desenharLinha(SDL_Renderer* r, int xi, int yi, int xf, int yf){
         wa = &x;
         wb = &y;
         end = xf;
-
-        if (xi > xf)
-            wa_shift = -1;
-        else 
-            wa_shift = 1;
-
-        if (yi > yf)
-            wb_shift = -1;
-        else if (yi == yf)
-            wb_shift = 0;
-        else
-            wb_shift = 1;
+        wa_offset = std::round((xf-xi)/(dx+1.f));
+        wb_offset = std::round((yf-yi)/(dy+1.f));
 
     }
     else {
@@ -50,18 +40,8 @@ void desenharLinha(SDL_Renderer* r, int xi, int yi, int xf, int yf){
         wa = &y;
         wb = &x;
         end = yf;
-
-        if (xi > xf)
-            wb_shift = -1;
-        else 
-            wb_shift = 1;
-
-        if (yi > yf)
-            wa_shift = -1;
-        else if (yi == yf)
-            wa_shift = 0;
-        else
-            wa_shift = 1;
+        wb_offset = std::round((xf-xi)/(dx+1.f));
+        wa_offset = std::round((yf-yi)/(dy+1.f));
     }
 
     int twoB = 2*b, twoBA = 2*(b-a);
@@ -70,13 +50,13 @@ void desenharLinha(SDL_Renderer* r, int xi, int yi, int xf, int yf){
     SDL_RenderDrawPoint(r, x+WIDTH/2, HEIGHT/2-y);
     
     while (*wa != end){
-        *wa += wa_shift;
+        *wa += wa_offset;
         
         if (p<0)
             p += twoB;
 
         else {
-            *wb += wb_shift;
+            *wb += wb_offset;
             p += twoBA;
         }
 
